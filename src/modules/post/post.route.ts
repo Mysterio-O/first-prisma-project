@@ -1,9 +1,28 @@
 import express from "express";
 import { postController } from "./post.controller";
+import auth, { UserRole } from "../../middleware/auth";
+
 
 const router = express.Router();
 
 
-router.post("/", postController.createPost)
+
+declare global {
+    namespace Express {
+        interface Request {
+            user?: {
+                id: string;
+                email: string;
+                name: string;
+                role: string;
+                emailVerified: boolean
+            }
+        }
+    }
+}
+
+
+
+router.post("/", auth(UserRole.USER), postController.createPost)
 
 export const postRouter = router;
