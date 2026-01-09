@@ -9,7 +9,15 @@ const router = express.Router();
 
 router.get("/:id", commentControllers.getCommentByPost)
 
-router.post("/", auth(UserRole.ADMIN, UserRole.USER), commentControllers.createComment)
+router.get("/byId/:id", commentControllers.getCommentById);
+router.get("/byAuthor/:id", commentControllers.getCommentsByAuthor);
+
+router.post("/", auth(UserRole.ADMIN, UserRole.USER), commentControllers.createComment);
+
+router.patch("/:id",auth(UserRole.ADMIN,UserRole.USER),commentControllers.updateComment);
+
+router.delete("/:id", auth(UserRole.ADMIN, UserRole.USER), commentControllers.deleteComment);
+
 
 
 
