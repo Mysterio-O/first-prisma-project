@@ -22,6 +22,9 @@ declare global {
 }
 
 
+router.get("/", postController.getAllPost)
+
+router.get("/:id", postController.getSinglePost)
 
 router.post("/", auth(UserRole.USER), postController.createPost)
 
