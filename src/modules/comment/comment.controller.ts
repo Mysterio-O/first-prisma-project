@@ -168,11 +168,38 @@ const updateComment = async (req: Request, res: Response) => {
     }
 }
 
+const moderateComment = async (req: Request, res: Response) => {
+    try {
+        const { commentId } = req.params;
+        const data = req.body;
+        if (!commentId) {
+            throw new Error("Comment id not found")
+        }
+        if (!data) {
+            throw new Error("Update data not found")
+        }
+        const result = await commentServices.moderateComment(commentId, data);
+        res.status(200).json({
+            success: true,
+            result
+        })
+    } catch (e) {
+        console.error(e);
+        const errMessage = (e instanceof Error) ? e.message :'Failed to update comment status'
+        res.status(400).json({
+            success: false,
+            error: "failed to update comment",
+            details: errMessage
+        })
+    }
+}
+
 export const commentControllers = {
     createComment,
     getCommentByPost,
     getCommentById,
     getCommentsByAuthor,
     deleteComment,
-    updateComment
+    updateComment,
+    moderateComment
 }

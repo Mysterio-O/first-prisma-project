@@ -16,6 +16,8 @@ router.post("/", auth(UserRole.ADMIN, UserRole.USER), commentControllers.createC
 
 router.patch("/:id",auth(UserRole.ADMIN,UserRole.USER),commentControllers.updateComment);
 
+router.patch("/moderate/:commentId",auth(UserRole.ADMIN),commentControllers.moderateComment)
+
 router.delete("/:id", auth(UserRole.ADMIN, UserRole.USER), commentControllers.deleteComment);
 
 
