@@ -26,6 +26,8 @@ router.get("/", postController.getAllPost)
 
 router.get("/:id", postController.getSinglePost)
 
-router.post("/", auth(UserRole.USER), postController.createPost)
+router.get('/me/my-posts', auth(UserRole.ADMIN, UserRole.USER), postController.getMyPosts)
+
+router.post("/", auth(UserRole.USER,UserRole.ADMIN), postController.createPost)
 
 export const postRouter = router;
