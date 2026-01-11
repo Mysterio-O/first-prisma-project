@@ -28,8 +28,10 @@ router.get("/:id", postController.getSinglePost)
 
 router.get('/me/my-posts', auth(UserRole.ADMIN, UserRole.USER), postController.getMyPosts);
 
-router.patch("/:postId",auth(UserRole.ADMIN,UserRole.USER),postController.updatePost)
+router.patch("/:postId", auth(UserRole.ADMIN, UserRole.USER), postController.updatePost)
 
-router.post("/", auth(UserRole.USER,UserRole.ADMIN), postController.createPost)
+router.post("/", auth(UserRole.USER, UserRole.ADMIN), postController.createPost);
+
+router.delete("/:id", auth(UserRole.ADMIN, UserRole.USER), postController.deletePost);
 
 export const postRouter = router;

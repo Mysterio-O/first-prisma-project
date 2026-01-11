@@ -187,11 +187,29 @@ const updatePost = async (postId: string, data: Partial<Post>, authorId: string,
 
 }
 
+const deletePost = async (postId: string, isAdmin: boolean, userId: string) => {
+    const post = await prisma.post.findUniqueOrThrow({
+        where: {
+            id: postId
+        }
+    });
+
+    if (!isAdmin && (post.authorId !== userId)) {
+        throw new Error("you're not allowed to make this action")
+    }
+
+    return await prisma.post.delete({
+        where: {
+            id: postId
+        }
+    })
+}
 
 export const postService = {
     createPost,
     getAllPost,
     getSinglePost,
     getMyPosts,
-    updatePost
+    updatePost,
+    deletePost
 }

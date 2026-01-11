@@ -143,6 +143,41 @@ const updatePost = async (req: Request, res: Response) => {
             details: e
         })
     }
+};
+
+const deletePost = async (req: Request, res: Response) => {
+    try {
+        const user = req.user;
+        const { id } = req.params;
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "unauthorized access"
+            })
+        };
+        if (!id) {
+            throw new Error("Post id not found")
+        }
+        
+
+        const isAdmin = user.role === UserRole.ADMIN;
+
+        const result = await postService.deletePost(id,isAdmin,user.id);
+
+        res.status(200).json({
+            success: true,
+            message: "post deleted successfully",
+            result
+        })
+    }
+    catch (e) {
+        console.log(e)
+        const errorMessage = (e instanceof Error) ? e.message : "Post update failed!"
+        res.status(400).json({
+            error: errorMessage,
+            details: e
+        })
+    }
 }
 
 export const postController = {
@@ -151,4 +186,5 @@ export const postController = {
     getSinglePost,
     getMyPosts,
     updatePost,
+    deletePost
 }
