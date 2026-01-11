@@ -26,7 +26,9 @@ router.get("/", postController.getAllPost)
 
 router.get("/:id", postController.getSinglePost)
 
-router.get('/me/my-posts', auth(UserRole.ADMIN, UserRole.USER), postController.getMyPosts)
+router.get('/me/my-posts', auth(UserRole.ADMIN, UserRole.USER), postController.getMyPosts);
+
+router.patch("/:postId",auth(UserRole.ADMIN,UserRole.USER),postController.updatePost)
 
 router.post("/", auth(UserRole.USER,UserRole.ADMIN), postController.createPost)
 
