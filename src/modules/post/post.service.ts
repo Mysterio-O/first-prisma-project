@@ -1,6 +1,7 @@
 import { CommentStatus, Post, PostStatus } from "../../../generated/prisma/client";
 import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
+import { UserRole } from "../../middleware/auth";
 
 const createPost = async (data: Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'authorId'>, userId: string) => {
     const result = await prisma.post.create({
@@ -209,7 +210,7 @@ const deletePost = async (postId: string, isAdmin: boolean, userId: string) => {
 const getStats = async () => {
     return await prisma.$transaction(async (tx) => {
 
-        const [totalPosts, publishedPosts, draftPosts, archivedPosts, totalComments, totalApprovedComments] = await Promise.all([
+        const [totalPosts, publishedPosts, draftPosts, archivedPosts, totalComments, totalApprovedComments, totalUsers, totalAdminCount, totalUserCount, totalViews] = await Promise.all([
             await tx.post.count(),
 
             await tx.post.count({
@@ -234,15 +235,36 @@ const getStats = async () => {
                 where: {
                     status: CommentStatus.APPROVED
                 }
+            }),
+            await tx.user.count(),
+            await tx.user.count({
+                where: {
+                    role: UserRole.ADMIN
+                }
+            }),
+            await tx.user.count({
+                where: {
+                    role: UserRole.USER
+                }
+            }),
+            await tx.post.aggregate({
+                _sum: { views: true }
             })
-        ])
+        ]);
+
+        const total_views = totalViews._sum.views
         const stats = {
             posts_stats: {
-                totalPosts, publishedPosts, draftPosts, archivedPosts
+                totalPosts, publishedPosts, draftPosts, archivedPosts, total_views
             },
             comment_stats: {
                 totalComments,
                 totalApprovedComments
+            },
+            users: {
+                totalUsers,
+                totalAdminCount,
+                totalUserCount
             }
         };
 
