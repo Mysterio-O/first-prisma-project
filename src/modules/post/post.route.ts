@@ -23,10 +23,12 @@ declare global {
 
 
 router.get("/", postController.getAllPost)
+router.get("/stats",auth(UserRole.ADMIN),postController.getStats);
 
 router.get("/:id", postController.getSinglePost)
 
 router.get('/me/my-posts', auth(UserRole.ADMIN, UserRole.USER), postController.getMyPosts);
+
 
 router.patch("/:postId", auth(UserRole.ADMIN, UserRole.USER), postController.updatePost)
 

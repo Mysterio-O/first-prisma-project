@@ -158,11 +158,11 @@ const deletePost = async (req: Request, res: Response) => {
         if (!id) {
             throw new Error("Post id not found")
         }
-        
+
 
         const isAdmin = user.role === UserRole.ADMIN;
 
-        const result = await postService.deletePost(id,isAdmin,user.id);
+        const result = await postService.deletePost(id, isAdmin, user.id);
 
         res.status(200).json({
             success: true,
@@ -180,11 +180,30 @@ const deletePost = async (req: Request, res: Response) => {
     }
 }
 
+const getStats = async (req: Request, res: Response) => {
+    try {
+        const stats = await postService.getStats();
+        res.status(200).json({
+            success: true,
+            stats
+        })
+    }
+    catch (e) {
+        console.error(e);
+        const errorMessage = (e instanceof Error) ? e.message : "failed to get stats"
+        res.status(400).json({
+            error: errorMessage,
+            details: e
+        })
+    }
+}
+
 export const postController = {
     createPost,
     getAllPost,
     getSinglePost,
     getMyPosts,
     updatePost,
-    deletePost
+    deletePost,
+    getStats
 }
