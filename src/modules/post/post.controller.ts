@@ -1,10 +1,10 @@
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
 import { postService } from "./post.service"
 import { PostStatus } from "../../../generated/prisma/enums";
 import paginationAndSortingHelper from "../../helpers/paginationAndSorting";
 import { UserRole } from "../../middleware/auth";
 
-const createPost = async (req: Request, res: Response) => {
+const createPost = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (!req.body) return;
         if (!req.user) {
@@ -21,16 +21,12 @@ const createPost = async (req: Request, res: Response) => {
         })
     }
     catch (err) {
-        console.error(err);
-        res.status(400).json({
-            success: false,
-            err
-        })
+        next(err);
     }
 }
 
 
-const getAllPost = async (req: Request, res: Response) => {
+const getAllPost = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { search } = req.query;
         const query = typeof search === 'string' ? search : undefined;
@@ -65,17 +61,12 @@ const getAllPost = async (req: Request, res: Response) => {
         })
     }
     catch (e) {
-        console.error(e);
-        res.status(400).json({
-            success: false,
-            message: "Failed to get posts",
-            details: e
-        })
+        next(e)
     }
 }
 
 
-const getSinglePost = async (req: Request, res: Response) => {
+const getSinglePost = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const postId = req.params.id as string;
         if (!postId) {
@@ -88,16 +79,11 @@ const getSinglePost = async (req: Request, res: Response) => {
         })
     }
     catch (e) {
-        console.error(e);
-        res.status(400).json({
-            success: false,
-            message: "Failed to get post",
-            details: e
-        })
+        next(e)
     }
 };
 
-const getMyPosts = async (req: Request, res: Response) => {
+const getMyPosts = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user = req.user;
         if (!user) {
@@ -114,18 +100,12 @@ const getMyPosts = async (req: Request, res: Response) => {
         })
     }
     catch (e) {
-        console.error(e);
-        const errMessage = (e instanceof Error) ? e.message : "Failed to get posts";
-        res.status(400).json({
-            success: false,
-            error: "failed to get posts",
-            details: errMessage
-        })
+        next(e)
     }
 };
 
 
-const updatePost = async (req: Request, res: Response) => {
+const updatePost = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user = req.user;
         if (!user) {
@@ -137,15 +117,11 @@ const updatePost = async (req: Request, res: Response) => {
         const result = await postService.updatePost(postId as string, req.body, user.id, isAdmin);
         res.status(200).json(result)
     } catch (e) {
-        const errorMessage = (e instanceof Error) ? e.message : "Post update failed!"
-        res.status(400).json({
-            error: errorMessage,
-            details: e
-        })
+        next(e)
     }
 };
 
-const deletePost = async (req: Request, res: Response) => {
+const deletePost = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user = req.user;
         const { id } = req.params;
@@ -171,16 +147,11 @@ const deletePost = async (req: Request, res: Response) => {
         })
     }
     catch (e) {
-        console.log(e)
-        const errorMessage = (e instanceof Error) ? e.message : "Post update failed!"
-        res.status(400).json({
-            error: errorMessage,
-            details: e
-        })
+        next(e)
     }
 }
 
-const getStats = async (req: Request, res: Response) => {
+const getStats = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const stats = await postService.getStats();
         res.status(200).json({
@@ -189,12 +160,7 @@ const getStats = async (req: Request, res: Response) => {
         })
     }
     catch (e) {
-        console.error(e);
-        const errorMessage = (e instanceof Error) ? e.message : "failed to get stats"
-        res.status(400).json({
-            error: errorMessage,
-            details: e
-        })
+        next(e)
     }
 }
 

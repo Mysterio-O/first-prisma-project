@@ -1,8 +1,7 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { commentServices } from "./comment.service";
-import { success } from "better-auth/*";
 
-const createComment = async (req: Request, res: Response) => {
+const createComment = async (req: Request, res: Response,next:NextFunction) => {
     const user = req.user;
     if (!req.body) {
         throw new Error("Body not found");
@@ -18,16 +17,11 @@ const createComment = async (req: Request, res: Response) => {
             message: 'comment posted successfully'
         })
     } catch (e) {
-        console.log(e);
-        res.status(400).json({
-            success: false,
-            error: "failed to post comment",
-            details: e
-        })
+       next(e)
     }
 };
 
-const getCommentByPost = async (req: Request, res: Response) => {
+const getCommentByPost = async (req: Request, res: Response,next:NextFunction) => {
     try {
         const { id } = req.params;
         if (!id) {
@@ -40,16 +34,11 @@ const getCommentByPost = async (req: Request, res: Response) => {
         })
     }
     catch (e) {
-        console.error(e);
-        res.status(400).json({
-            success: false,
-            error: "failed to get comments",
-            details: e
-        })
+        next(e);
     }
 };
 
-const getCommentById = async (req: Request, res: Response) => {
+const getCommentById = async (req: Request, res: Response,next:NextFunction) => {
     try {
         const { id } = req.params;
         if (!id) {
@@ -62,16 +51,11 @@ const getCommentById = async (req: Request, res: Response) => {
         })
     }
     catch (e) {
-        console.error(e);
-        res.status(400).json({
-            success: false,
-            error: "failed to get comment by id",
-            details: e
-        })
+       next(e);
     }
 }
 
-const getCommentsByAuthor = async (req: Request, res: Response) => {
+const getCommentsByAuthor = async (req: Request, res: Response,next:NextFunction) => {
     try {
         const { id } = req.params;
         if (!id) {
@@ -85,16 +69,11 @@ const getCommentsByAuthor = async (req: Request, res: Response) => {
         })
     }
     catch (e) {
-        console.error(e);
-        res.status(400).json({
-            success: false,
-            error: "failed to get comment by author id",
-            details: e
-        })
+        next(e);
     }
 }
 
-const deleteComment = async (req: Request, res: Response) => {
+const deleteComment = async (req: Request, res: Response,next:NextFunction) => {
     try {
         const { id } = req.params;
 
@@ -120,16 +99,11 @@ const deleteComment = async (req: Request, res: Response) => {
         })
     }
     catch (e) {
-        console.error(e);
-        res.status(400).json({
-            success: false,
-            error: "failed to delete comment",
-            details: e
-        })
+       next(e);
     }
 };
 
-const updateComment = async (req: Request, res: Response) => {
+const updateComment = async (req: Request, res: Response,next:NextFunction) => {
     const { id } = req.params;
     const data = req.body;
     const user = req.user;
@@ -159,16 +133,11 @@ const updateComment = async (req: Request, res: Response) => {
 
     }
     catch (e) {
-        console.error(e);
-        res.status(400).json({
-            success: false,
-            error: "failed to update comment",
-            details: e
-        })
+       next(e)
     }
 }
 
-const moderateComment = async (req: Request, res: Response) => {
+const moderateComment = async (req: Request, res: Response,next:NextFunction) => {
     try {
         const { commentId } = req.params;
         const data = req.body;
@@ -184,13 +153,7 @@ const moderateComment = async (req: Request, res: Response) => {
             result
         })
     } catch (e) {
-        console.error(e);
-        const errMessage = (e instanceof Error) ? e.message :'Failed to update comment status'
-        res.status(400).json({
-            success: false,
-            error: "failed to update comment",
-            details: errMessage
-        })
+       next(e)
     }
 }
 
